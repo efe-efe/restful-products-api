@@ -6,11 +6,11 @@ function getProduct(productId) {
     console.log(`Get product: ${productId}`);
 }
 
-function postProduct(productId) {
+function createProduct(productId) {
     console.log(`Create product: ${productId}`);
 }
 
-function patchProduct(productId) {
+function updateProduct(productId) {
     console.log(`Update product: ${productId}`);
 }
 
@@ -21,7 +21,7 @@ function deleteProduct(productId) {
 module.exports = {
     getProducts,
     getProduct,
-    postProduct,
-    patchProduct,
+    createProduct,
+    updateProduct,
     deleteProduct
 }

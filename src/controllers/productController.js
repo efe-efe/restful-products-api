@@ -10,21 +10,21 @@ function getProduct(req, res) {
     res.send(`Get product: ${req.params.productId}`);
 }
 
-function postProduct(req, res) {
-    //TODO: Validate body and create product and use it as parameter for service.postProduct
+function createProduct(req, res) {
+    //TODO: Validate body and create product and use it as parameter for service.createProduct
 
-    service.postProduct({});
+    service.createProduct({});
     res.send(`Create product: ${req.params.productId}`);
 }
 
-function patchProduct(req, res) {
+function updateProduct(req, res) {
     const { body } = req;
 
     if (!body.productId) {
         return;
     }
 
-    service.patchProduct(body.productId);
+    service.updateProduct(body.productId);
     res.send(`Update product: ${body.productId}`);
 }
 
@@ -42,7 +42,7 @@ function deleteProduct(req, res) {
 module.exports = {
     getProducts,
     getProduct,
-    postProduct,
-    patchProduct,
+    createProduct,
+    updateProduct,
     deleteProduct
 }
