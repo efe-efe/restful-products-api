@@ -8,3 +8,11 @@ The application uses an architecture of three layers: Routes, Services and Contr
 * Routes: Routes are a versioned set of modules in charge of delegating requests to the appropiate controller.
 * Controllers: Controllers are in charge of managing validating the request, calling the appropiate services and formulate the responses.
 * Services: Services are in charge of mutating the database and in most cases, returning the results of those mutations.
+
+## Database
+
+This application works in pair with a relational database. The database can be created by running the file `src/database/init.sql` with your prefered RDBMS. The script will generate the products table and insert some test data into it.
+
+## Environment
+
+The application requires some environment variables to run. Those variables are specified in the `.env.example` file.
