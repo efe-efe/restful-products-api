@@ -11,7 +11,7 @@ The application uses an architecture of three layers: Routes, Services and Contr
 
 ## Database
 
-This application works in pair with a relational database. The database can be created by running the file `src/database/init.sql` with your prefered RDBMS. The script will generate the products table and insert some test data into it.
+This application works in pair with a SQL Server relational database. The database can be created by running the file `src/database/init.sql` with on the RDMBS console. The script will generate the products table and insert some test data into it.
 
 ## Environment
 

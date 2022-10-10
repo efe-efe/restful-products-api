@@ -5,7 +5,7 @@ const controller = require("../../controllers/productController");
 router
     .get("/", controller.getProducts)
     .get("/:productId", controller.getProduct)
-    .post("/:productId", controller.createProduct)
+    .post("/", controller.createProduct)
     .patch("/:productId", controller.updateProduct)
     .delete("/:productId", controller.deleteProduct);
 

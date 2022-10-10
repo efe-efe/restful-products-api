@@ -1,42 +1,112 @@
 const service = require("../services/productService");
+const { serverError, badRequest } = require("./errors");
 
-function getProducts(req, res) {
-    service.getProducts();
-    res.send("Get all products");
+async function getProducts(req, res) {
+    try {
+        const products = await service.getProducts();
+        res.send(products);
+    }
+    catch {
+        res.status(serverError.code).send({
+            status: serverError.status,
+            data: serverError.data,
+        });
+    }
 }
 
-function getProduct(req, res) {
-    service.getProduct(req.params.productId);
-    res.send(`Get product: ${req.params.productId}`);
+async function getProduct(req, res) {
+    const { params: { productId } } = req;
+
+    //TODO: Validate params
+
+    try {
+        const product = await service.getProduct(productId);
+        res.send(product);
+    }
+    catch {
+        res.status(serverError.code).send({
+            status: serverError.status,
+            data: serverError.data,
+        });
+    }
 }
 
-function createProduct(req, res) {
-    //TODO: Validate body and create product and use it as parameter for service.createProduct
-
-    service.createProduct({});
-    res.send(`Create product: ${req.params.productId}`);
-}
-
-function updateProduct(req, res) {
+async function createProduct(req, res) {
     const { body } = req;
 
-    if (!body.productId) {
-        return;
+    //TODO: Validate body
+
+    const product = {
+        sku: body.sku,
+        name: body.name,
+        brand: body.brand,
+        size: body.size,
+        price: body.price,
+        image: body.image
     }
 
-    service.updateProduct(body.productId);
-    res.send(`Update product: ${body.productId}`);
+    try {
+        await service.createProduct(product);
+        res.status(200).send({
+            status: "success",
+            data: { message: "Successfully inserted product." },
+        });
+    }
+    catch {
+        res.status(serverError.code).send({
+            status: serverError.status,
+            data: serverError.data,
+        });
+    }
 }
 
-function deleteProduct(req, res) {
-    const { body } = req;
+async function updateProduct(req, res) {
+    const { body, params: { productId } } = req;
 
-    if (!body.productId) {
-        return;
+    //TODO: Validate params & body
+
+    const product = {
+        sku: productId,
+        name: body.name,
+        brand: body.brand,
+        size: body.size,
+        price: body.price,
+        image: body.image
     }
 
-    service.deleteProduct(body.productId);
-    res.send(`Delete product: ${req.params.productId}`);
+    try {
+        await service.updateProduct(product);
+        res.status(200).send({
+            status: "success",
+            data: { message: "Successfully updated product." },
+        });
+    }
+    catch {
+        res.status(serverError.code).send({
+            status: serverError.status,
+            data: serverError.data,
+        });
+    }
+}
+
+async function deleteProduct(req, res) {
+    const { params: { productId } } = req;
+
+    //TODO: Validate params
+
+    try {
+        await service.deleteProduct(productId);
+        res.status(200).send({
+            status: "success",
+            data: { message: "Successfully deleted product." },
+        });
+    }
+    catch {
+        res.status(serverError.code).send({
+            status: serverError.status,
+            data: serverError.data,
+        });
+    }
 }
 
 module.exports = {
