@@ -7,7 +7,6 @@ const serverError = {
 const badRequest = {
     code: 400,
     status: "FAILED",
-    data: (error) => { error }
 }
 
 module.exports = {

@@ -1,5 +1,9 @@
+const joi = require("joi");
 const service = require("../services/productService");
 const { serverError, badRequest } = require("./errors");
+
+//TODO: Send more info in the bad request errors
+//TODO: Make size and image optional
 
 async function getProducts(req, res) {
     try {
@@ -15,15 +19,30 @@ async function getProducts(req, res) {
 }
 
 async function getProduct(req, res) {
-    const { params: { productId } } = req;
+    const { params } = req;
 
-    //TODO: Validate params
+    const schema = joi.object({
+        productId: joi.string()
+            .required()
+            .min(11)
+            .max(13)
+            .regex(new RegExp("^FAL-\\d{7,9}$"))
+    });
+
+    const errors = schema.validate(params).error;
+    if (errors) {
+        res.status(badRequest.code).send({
+            status: badRequest.status,
+        });
+        return;
+    }
 
     try {
-        const product = await service.getProduct(productId);
+        const product = await service.getProduct(params.productId);
         res.send(product);
     }
-    catch {
+    catch (err) {
+        console.log(err);
         res.status(serverError.code).send({
             status: serverError.status,
             data: serverError.data,
@@ -34,7 +53,37 @@ async function getProduct(req, res) {
 async function createProduct(req, res) {
     const { body } = req;
 
-    //TODO: Validate body
+    const schema = joi.object({
+        sku: joi.string()
+            .required()
+            .min(11)
+            .max(13)
+            .regex(new RegExp("^FAL-\\d{7,9}$")),
+        name: joi.string()
+            .required()
+            .min(3)
+            .max(50),
+        brand: joi.string()
+            .required()
+            .min(3)
+            .max(50),
+        size: joi.string()
+            .required(),
+        price: joi.number()
+            .required()
+            .min(1)
+            .max(99999999),
+        image: joi.string()
+            .required(),
+    });
+
+    const errors = schema.validate(body).error;
+    if (errors) {
+        res.status(badRequest.code).send({
+            status: badRequest.status,
+        });
+        return;
+    }
 
     const product = {
         sku: body.sku,
@@ -52,7 +101,8 @@ async function createProduct(req, res) {
             data: { message: "Successfully inserted product." },
         });
     }
-    catch {
+    catch (err) {
+        console.log(err);
         res.status(serverError.code).send({
             status: serverError.status,
             data: serverError.data,
@@ -61,12 +111,46 @@ async function createProduct(req, res) {
 }
 
 async function updateProduct(req, res) {
-    const { body, params: { productId } } = req;
+    const { body, params } = req;
 
-    //TODO: Validate params & body
+    const paramsSchema = joi.object({
+        productId: joi.string()
+            .required()
+            .min(11)
+            .max(13)
+            .regex(new RegExp("^FAL-\\d{7,9}$"))
+    });
+
+    const bodySchema = joi.object({
+        name: joi.string()
+            .required()
+            .min(3)
+            .max(50),
+        brand: joi.string()
+            .required()
+            .min(3)
+            .max(50),
+        size: joi.string()
+            .required(),
+        price: joi.number()
+            .required()
+            .min(1)
+            .max(99999999),
+        image: joi.string()
+            .required(),
+    });
+
+    const errors = paramsSchema.validate(params).error ?? bodySchema.validate(body).error;
+    if (errors) {
+        console.log(errors);
+        res.status(badRequest.code).send({
+            status: badRequest.status,
+        });
+        return;
+    }
 
     const product = {
-        sku: productId,
+        sku: params.productId,
         name: body.name,
         brand: body.brand,
         size: body.size,
@@ -81,7 +165,8 @@ async function updateProduct(req, res) {
             data: { message: "Successfully updated product." },
         });
     }
-    catch {
+    catch (err) {
+        console.log(err);
         res.status(serverError.code).send({
             status: serverError.status,
             data: serverError.data,
@@ -90,18 +175,33 @@ async function updateProduct(req, res) {
 }
 
 async function deleteProduct(req, res) {
-    const { params: { productId } } = req;
+    const { params } = req;
 
-    //TODO: Validate params
+    const schema = joi.object({
+        productId: joi.string()
+            .required()
+            .min(11)
+            .max(13)
+            .regex(new RegExp("^FAL-\\d{7,9}$"))
+    });
+
+    const errors = schema.validate(params).error;
+    if (errors) {
+        res.status(badRequest.code).send({
+            status: badRequest.status,
+        });
+        return;
+    }
 
     try {
-        await service.deleteProduct(productId);
+        await service.deleteProduct(params.productId);
         res.status(200).send({
             status: "success",
             data: { message: "Successfully deleted product." },
         });
     }
-    catch {
+    catch (err) {
+        console.log(err);
         res.status(serverError.code).send({
             status: serverError.status,
             data: serverError.data,
