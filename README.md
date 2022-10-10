@@ -1,28 +1,16 @@
 # restful-products-api
 Example RESTful API for Falabella products
 
-## Local Execution
+## Environment
 
-To run the development environment, the following environment variables are mandatory (this variables are also specified on the `.env.example` file):
+Before running the application with any method, you will need to setup the environment variables. To do that replace the values on the file `.env.example` and rename the file to `.env`.
 
 |  Variable name | Description |
 |---|---|
 | DB_NAME | The name of your SQL Database |
-| DB_HOST | The host where the SQL Database is running |
+| DB_HOST | The host where the SQL Database is running. NOT REQUIRED WHEN USING DOCKER COMPOSE|
 | DB_USER | The user of the SQL Database |
 | DB_PASSWORD | The password of your SQL Database |
-
-Run the NodeJS server
-
-```
-npm install
-npm run dev
-```
-
-Run the tests suite
-```
-npm run test
-```
 
 ## Docker Excecution
 
@@ -34,15 +22,62 @@ docker-compose up
 
 Once the command finishes, you will be able to use the API on `http://localhost:3000`
 
+## Local Execution
+
+<em>Note: The local execution requires you to have installed a MySQL Server with the same parameters you specified in the environment variables. Also you will need to run the script `src/database/init.sql` to start create the tables and add some test data.</em>
+
+Run the NodeJS server
+
+```
+npm install
+npm run dev
+```
+
+Once the command finishes, you will be able to use the API on `http://localhost:3000`
+
+Run the tests suite
+```
+npm run test
+```
+
 ## Endpoints
 
-|  Endpoint | Method | Description |
-|---|---|---|
-| /api/v1/products | GET | Obtain all the products |
-| /api/v1/products/:productId | GET | Obtain an specific product |
-| /api/v1/products | POST | Create a new product |
-| /api/v1/products/:productId | PATCH | Update an specific product |
-| /api/v1/products/:productId | DELETE | Delete an specific product |
+* /api/v1/products
+    - Method: GET
+    - Description: Obtain all the products
+* /api/v1/products/:productId
+    - Method: GET
+    - Description: Obtain the product with the id :productId
+* /api/v1/products
+    - Method: POST
+    - Description: Creates a new product
+    - Required data:
+    ```
+    {
+        sku, // STRING - ID del producto
+        name, // STRING - Nombre del producto
+        brand, // STRING - Marca del producto
+        size, // STRING - Tamaño del producto (opcional)
+        price, // NUMBER - Precio del producto
+        images // STRING ARRAY - URL de imagenes del producto (opcional)
+    }
+    ```
+* /api/v1/products/:productId
+    - Method: PATCH
+    - Description: Updates the product with the id :productId
+    - Required data:
+    ```
+    {
+        name, // STRING - Nombre del producto
+        brand, // STRING - Marca del producto
+        size, // STRING - Tamaño del producto (opcional)
+        price, // NUMBER - Precio del producto
+        images // STRING ARRAY - URL de imagenes del producto (opcional)
+    }
+    ```
+* /api/v1/products/:productId
+    - Method: DELETE
+    - Description: Deletes the product with the id :productId
 
 ## Architecture
 
