@@ -2,7 +2,6 @@ const joi = require("joi");
 const service = require("../services/productService");
 const { serverError, badRequest } = require("./errors");
 
-//TODO: Send more info in the bad request errors
 //TODO: Make size and image optional
 
 async function getProducts(req, res) {
@@ -33,6 +32,7 @@ async function getProduct(req, res) {
     if (errors) {
         res.status(badRequest.code).send({
             status: badRequest.status,
+            data: { error: errors.message }
         });
         return;
     }
@@ -81,6 +81,7 @@ async function createProduct(req, res) {
     if (errors) {
         res.status(badRequest.code).send({
             status: badRequest.status,
+            data: { error: errors.message }
         });
         return;
     }
@@ -145,6 +146,7 @@ async function updateProduct(req, res) {
         console.log(errors);
         res.status(badRequest.code).send({
             status: badRequest.status,
+            data: { error: errors.message }
         });
         return;
     }
@@ -189,6 +191,7 @@ async function deleteProduct(req, res) {
     if (errors) {
         res.status(badRequest.code).send({
             status: badRequest.status,
+            data: { error: errors.message }
         });
         return;
     }
