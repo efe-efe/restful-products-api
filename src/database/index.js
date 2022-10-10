@@ -6,13 +6,32 @@ const connection = mysql.createConnection({
     database: process.env.DB_NAME
 })
 
-//TODO: Remove race condition
-connection.connect((err) => {
-    if (err) {
-        throw err;
+const MAX_RETRIES = 10;
+const RETRY_INTREVAL = 2000;
+let retries = 0;
+
+function connect() {
+    return new Promise((resolve, reject) => {
+        connection.connect((err) => err ? reject(err) : resolve());
+    })
+}
+
+async function connectAndSchedule() {
+    if (retries >= MAX_RETRIES) {
+        throw "Unable to connect";
     }
 
-    console.log("Successful database connection!");
-});
+    try {
+        await connect();
+        console.log("Successfully connected to the Database!");
+    } catch (err) {
+        retries++;
+        console.log("Connection failed: ", err);
+        console.log(`Retrying in ${RETRY_INTREVAL / 1000}s. Remaining retries: ${MAX_RETRIES - retries}`)
+        setTimeout(connectAndSchedule, RETRY_INTREVAL)
+    }
+}
+
+connectAndSchedule();
 
 module.exports = connection;
