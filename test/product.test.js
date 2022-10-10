@@ -6,7 +6,7 @@ chai.use(chaiHttp);
 const url = "http://localhost:3000/api/v1";
 const existingSKU = "FAL-8406270";
 
-//TODO: Restore the DB state to its previous form efore each test. Currently that is being done manually with requests.
+//TODO: Restore the DB state to its previous form before each test. Currently that is being done manually with requests.
 
 describe("Get all products: ", () => {
     it("should provide all the products", (done) => {
@@ -56,7 +56,7 @@ describe("Create a product", () => {
                         brand: "The brand",
                         size: "XS",
                         price: 10990,
-                        image: "https://www.fake-url.com"
+                        images: ["https://www.fake-url.com"]
                     })
                     .end(function (err, res) {
                         expect(res).to.have.status(200);
@@ -82,7 +82,7 @@ describe("Create a product", () => {
                 brand: "The brand",
                 size: "XS",
                 price: 10990,
-                image: "https://www.fake-url.com"
+                images: ["https://www.fake-url.com"]
             })
             .end(function (err, res) {
                 expect(res).to.have.status(400);
@@ -108,7 +108,7 @@ describe("Update a product", () => {
             brand: "Updated brand",
             size: "XS",
             price: 10990,
-            image: "https://www.fake-url.com"
+            images: ["https://www.fake-url.com"]
         }
 
         chai.request(url)
@@ -116,18 +116,7 @@ describe("Update a product", () => {
             .send(updated)
             .end(function (err, res) {
                 expect(res).to.have.status(200);
-
-                chai.request(url)
-                    .get(`/products/${existingSKU}`)
-                    .end(function (err, res) {
-                        expect(res).to.have.status(200);
-
-                        for (const [key, value] of Object.entries(updated)) {
-                            expect(res.body[0][key]).to.equal(value);
-                        }
-
-                        done();
-                    })
+                done();
             })
     })
 
@@ -169,7 +158,7 @@ describe("Update a product", () => {
                                     brand: "New Balance",
                                     size: "37",
                                     price: 42990.00,
-                                    image: "https://falabella.scene7.com/is/image/Falabella/8406270_1"
+                                    images: ["https://falabella.scene7.com/is/image/Falabella/8406270_1"]
                                 })
                                 .end(function (err, res) {
                                     expect(res).to.have.status(200);

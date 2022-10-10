@@ -1,9 +1,8 @@
-const joi = require("joi");
+const Joi = require("Joi");
 const service = require("../services/productService");
 const { serverError, badRequest } = require("./errors");
 
-//TODO: Make size and image optional
-
+//TODO: Add limits and pagination
 async function getProducts(req, res) {
     try {
         const products = await service.getProducts();
@@ -20,8 +19,8 @@ async function getProducts(req, res) {
 async function getProduct(req, res) {
     const { params } = req;
 
-    const schema = joi.object({
-        productId: joi.string()
+    const schema = Joi.object({
+        productId: Joi.string()
             .required()
             .min(11)
             .max(13)
@@ -53,28 +52,26 @@ async function getProduct(req, res) {
 async function createProduct(req, res) {
     const { body } = req;
 
-    const schema = joi.object({
-        sku: joi.string()
+    const schema = Joi.object({
+        sku: Joi.string()
             .required()
             .min(11)
             .max(13)
             .regex(new RegExp("^FAL-\\d{7,9}$")),
-        name: joi.string()
+        name: Joi.string()
             .required()
             .min(3)
             .max(50),
-        brand: joi.string()
+        brand: Joi.string()
             .required()
             .min(3)
             .max(50),
-        size: joi.string()
-            .required(),
-        price: joi.number()
+        size: Joi.string(),
+        price: Joi.number()
             .required()
             .min(1)
             .max(99999999),
-        image: joi.string()
-            .required(),
+        images: Joi.array().items(Joi.string())
     });
 
     const errors = schema.validate(body).error;
@@ -92,7 +89,7 @@ async function createProduct(req, res) {
         brand: body.brand,
         size: body.size,
         price: body.price,
-        image: body.image
+        images: body.images ?? []
     }
 
     try {
@@ -114,31 +111,29 @@ async function createProduct(req, res) {
 async function updateProduct(req, res) {
     const { body, params } = req;
 
-    const paramsSchema = joi.object({
-        productId: joi.string()
+    const paramsSchema = Joi.object({
+        productId: Joi.string()
             .required()
             .min(11)
             .max(13)
             .regex(new RegExp("^FAL-\\d{7,9}$"))
     });
 
-    const bodySchema = joi.object({
-        name: joi.string()
+    const bodySchema = Joi.object({
+        name: Joi.string()
             .required()
             .min(3)
             .max(50),
-        brand: joi.string()
+        brand: Joi.string()
             .required()
             .min(3)
             .max(50),
-        size: joi.string()
-            .required(),
-        price: joi.number()
+        size: Joi.string(),
+        price: Joi.number()
             .required()
             .min(1)
             .max(99999999),
-        image: joi.string()
-            .required(),
+        images: Joi.array().items(Joi.string())
     });
 
     const errors = paramsSchema.validate(params).error ?? bodySchema.validate(body).error;
@@ -157,7 +152,7 @@ async function updateProduct(req, res) {
         brand: body.brand,
         size: body.size,
         price: body.price,
-        image: body.image
+        images: body.images ?? []
     }
 
     try {
@@ -179,8 +174,8 @@ async function updateProduct(req, res) {
 async function deleteProduct(req, res) {
     const { params } = req;
 
-    const schema = joi.object({
-        productId: joi.string()
+    const schema = Joi.object({
+        productId: Joi.string()
             .required()
             .min(11)
             .max(13)

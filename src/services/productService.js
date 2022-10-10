@@ -12,38 +12,130 @@ function queryConnection(query) {
     })
 }
 
+function valueOrNull(value) {
+    return value ? `"${value}"` : "NULL";
+}
+
 async function getProducts() {
-    const query = "SELECT * FROM product";
-    return queryConnection(query);
+    const productsQuery = "SELECT * FROM product"
+
+    try {
+        const products = await queryConnection(productsQuery);
+        const parsedProducts = [];
+
+        for (const product of products) {
+            try {
+                const imagesQuery = `SELECT * FROM image WHERE sku = "${product.sku}"`;
+                const images = await queryConnection(imagesQuery);
+
+                parsedProducts.push({
+                    ...product, images
+                })
+            }
+            catch (err) {
+                throw err
+            }
+        }
+
+        return parsedProducts;
+    } catch (err) {
+        throw err;
+    }
 }
 
-function getProduct(productId) {
-    const query = `SELECT * FROM product WHERE sku = "${productId}"`;
-    return queryConnection(query);
+async function getProduct(productSku) {
+    const productQuery = `SELECT * FROM product WHERE sku = "${productSku}"`;
+    try {
+        const product = await queryConnection(productQuery);
+
+        if (product.length > 0) {
+            const imagesQuery = `SELECT * FROM image WHERE sku = "${product[0].sku}"`;
+            try {
+                const images = await queryConnection(imagesQuery);
+                return { ...product[0], images }
+            } catch (err) {
+                throw err;
+            }
+        } else {
+            throw err;
+        }
+    } catch (err) {
+        throw err;
+    }
 }
 
-//TODO: Should allow multiple images
-function createProduct(product) {
-    const query = `INSERT INTO product VALUES(
+async function createProduct(product) {
+    const productQuery = `INSERT INTO product VALUES(
         "${product.sku}",
         "${product.name}",
         "${product.brand}",
-        "${product.size}",
-        ${product.price},
-        "${product.image}"
+        ${valueOrNull(product.size)},
+        ${product.price}
     )`;
-    return queryConnection(query);
+
+    try {
+        await queryConnection(productQuery);
+    } catch (err) {
+        throw err;
+    }
+
+    let index = 1;
+    for (const image of product.images) {
+        const imageQuery = `INSERT INTO image(sku, sequence, url) VALUES(
+            "${product.sku}",
+            "${index}",
+            "${image}"
+        )`;
+
+        try {
+            await queryConnection(imageQuery);
+            index++;
+        } catch (err) {
+            throw err;
+        }
+    }
 }
 
-function updateProduct(product) {
-    const query = `UPDATE product
-        SET name = "${product.name}", brand = "${product.brand}", size = "${product.size}", price = ${product.price}, image = "${product.image}"
+async function updateProduct(product) {
+    const productQuery = `UPDATE product
+        SET name = "${product.name}", brand = "${product.brand}", size = ${valueOrNull(product.size)}, price = ${product.price}
         WHERE sku = "${product.sku}"`;
-    return queryConnection(query);
+
+    try {
+        await queryConnection(productQuery);
+
+        if (product.images.length > 0) {
+            try {
+                const deleteImageQuery = `DELETE FROM image WHERE sku = "${product.sku}"`
+                await queryConnection(deleteImageQuery);
+            }
+            catch (err) {
+                throw err
+            }
+        }
+
+        let index = 1;
+        for (const image of product.images) {
+            const imageQuery = `INSERT INTO image(sku, sequence, url) VALUES(
+                "${product.sku}",
+                "${index}",
+                "${image}"
+            )`;
+
+            try {
+                await queryConnection(imageQuery);
+                index++;
+            } catch (err) {
+                throw err;
+            }
+        }
+    } catch (err) {
+        throw err;
+    }
 }
 
-function deleteProduct(productId) {
-    const query = `DELETE FROM product WHERE sku = "${productId}"`
+function deleteProduct(productSku) {
+    const query = `DELETE FROM product WHERE sku = "${productSku}"`
     return queryConnection(query);
 }
 
