@@ -93,6 +93,7 @@ This application works in pair with a SQL Server relational database. The databa
 
 ## Improvement points
 
+* **There is a console message saying `Access denied for user 'root'@'localhost' (using password: NO)`, the application can run fine but it needs to be fixed in the future.**
 * Initialize database using migrations.
 * Use the migrations to restore the state of the database when running tests that mutates the database.
 * Add Swagger for the API Endpoints documentation.
